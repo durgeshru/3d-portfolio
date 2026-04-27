@@ -1,23 +1,30 @@
-import React, { useEffect, useRef, useMemo } from 'react'
-import { useGLTF } from '@react-three/drei'
-import { useThree, useFrame } from '@react-three/fiber'
-import * as THREE from 'three'
+import React, { useEffect, useRef, useMemo } from 'react';
+import { useGLTF } from '@react-three/drei';
+import { useThree, useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 
-function Model({ scrollProgress }) {
-
-  const { scene } = useGLTF('/models/env.glb')
-  const { camera } = useThree()
-
-  const curve = useRef()
-  const smoothT = useRef(0)
+function Model({ scrollProgress, onLoad }) {
+  const { scene } = useGLTF('/models/env.glb');
+  const { camera } = useThree();
+  const curve = useRef();
+  const smoothT = useRef(0);
+  const loadedRef = useRef(false); // prevent multiple onLoad calls
 
   // 🔥 generate points for line
   const points = useMemo(() => {
-    return new Array(100).fill().map((_, i) => i / 99)
-  }, [])
+    return new Array(100).fill().map((_, i) => i / 99);
+  }, []);
+
+  // Notify parent when the model scene is fully loaded
+  useEffect(() => {
+    if (scene && !loadedRef.current && onLoad) {
+      loadedRef.current = true;
+      onLoad(); // tells App that model is ready
+    }
+  }, [scene, onLoad]);
 
   useEffect(() => {
-    camera.position.set(13, 8, 15)
+    camera.position.set(13, 8, 15);
 
     curve.current = new THREE.CatmullRomCurve3([
       new THREE.Vector3(15, 5, 20),
@@ -29,27 +36,26 @@ function Model({ scrollProgress }) {
       new THREE.Vector3(0, 0.54, 0),
       new THREE.Vector3(-1, 0, -1),
       new THREE.Vector3(-2, 0, -2),
-    ])
-  }, [camera])
+    ]);
+  }, [camera]);
 
   useFrame((state, delta) => {
-    if (!curve.current) return
+    if (!curve.current) return;
 
     smoothT.current = THREE.MathUtils.damp(
       smoothT.current,
       scrollProgress,
       4,
       delta
-    )
+    );
 
-    const t = smoothT.current
+    const t = smoothT.current;
+    const point = curve.current.getPointAt(t);
+    camera.position.copy(point);
 
-    const point = curve.current.getPointAt(t)
-    camera.position.copy(point)
-
-    const lookAtPoint = curve.current.getPointAt(Math.min(t + 0.02, 1))
-    camera.lookAt(lookAtPoint)
-  })
+    const lookAtPoint = curve.current.getPointAt(Math.min(t + 0.02, 1));
+    camera.lookAt(lookAtPoint);
+  });
 
   return (
     <>
@@ -65,8 +71,8 @@ function Model({ scrollProgress }) {
               count={points.length}
               array={new Float32Array(
                 points.flatMap((t) => {
-                  const p = curve.current.getPointAt(t)
-                  return [p.x, p.y, p.z]
+                  const p = curve.current.getPointAt(t);
+                  return [p.x, p.y, p.z];
                 })
               )}
               itemSize={3}
@@ -83,7 +89,7 @@ function Model({ scrollProgress }) {
         rotation={[0, Math.PI / 1.8, 0]}
       />
     </>
-  )
+  );
 }
 
-export default Model
+export default Model;

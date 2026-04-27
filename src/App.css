@@ -16,3 +16,13 @@ color: white;
 
 
 
+@font-face {
+  font-family: 'Galiscka';
+  src: url('../src/assets/GALISCKA\ Regular.ttf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+h1 {
+  font-family: 'Galiscka', sans-serif;
+}
