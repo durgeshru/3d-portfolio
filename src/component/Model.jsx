@@ -4,7 +4,7 @@ import { useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 function Model({ scrollProgress, onLoad }) {
-  const { scene } = useGLTF('/models/env.glb');
+  const { scene } = useGLTF('/models/model1.glb');
   const { camera } = useThree();
   const curve = useRef();
   const smoothT = useRef(0);
@@ -27,15 +27,16 @@ function Model({ scrollProgress, onLoad }) {
     camera.position.set(13, 8, 15);
 
     curve.current = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(15, 5, 20),
-      new THREE.Vector3(10, 3, 16),
-      new THREE.Vector3(8, 2, 12),
-      new THREE.Vector3(6, 2, 8),
-      new THREE.Vector3(4, 1.54, 4),
-      new THREE.Vector3(1, 1, 2),
-      new THREE.Vector3(0, 0.54, 0),
+      new THREE.Vector3(15, 5, 40),
+      new THREE.Vector3(10, 3,36),
+      new THREE.Vector3(8, 2, 32),
+      new THREE.Vector3(6, 2, 28),
+      new THREE.Vector3(4, 1.54, 24),
+      new THREE.Vector3(1, 1, 12),
+      new THREE.Vector3(0, 0.54, 8),
       new THREE.Vector3(-1, 0, -1),
-      new THREE.Vector3(-2, 0, -2),
+      new THREE.Vector3(-2, 0, -10),
+            new THREE.Vector3(-2, 0, -20),
     ]);
   }, [camera]);
 
